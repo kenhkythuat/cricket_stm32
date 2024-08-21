@@ -22,7 +22,7 @@
 
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000156"
+  #define SERIAL_NUMBER "sw000155"
 #endif
 
 
