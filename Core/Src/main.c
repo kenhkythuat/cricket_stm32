@@ -198,7 +198,6 @@ void sendingToSimcomA76xx(char *cmd)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	 blink(200);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
