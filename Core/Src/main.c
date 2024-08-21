@@ -244,12 +244,13 @@ int main(void)
 	  if(!isConnectMQTT){
 		  isConnectMQTT = connectMQTT();
 	  }
+	  //isPBDONE =test1;
 	  if(sendPayloadStatusToServer == 1){
 		  sendStatusPayloadToMQTT();
 		  sendPayloadStatusToServer= 0;
 	  }
 
-
+	  blinkled();
   }
   /* USER CODE END 3 */
 }
