@@ -2,8 +2,11 @@
  * simcom.c
  *
  *  Created on: Aug 21, 2024
- *      Author: admin
+ *      Author: thuanphat7
  */
-#include"simcom.h"
+#include "simcom.h"
 
-#include"stdio.h"
+void blinkled(void)
+{
+
+}

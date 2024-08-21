@@ -2,12 +2,14 @@
  * simcom.h
  *
  *  Created on: Aug 21, 2024
- *      Author: admin
+ *      Author: thuanphat7
  */
 
-#ifndef SIMCOM_SIMCOM_H_
-#define SIMCOM_SIMCOM_H_
+#ifndef INC_SIMCOM_H_
+#define INC_SIMCOM_H_
+
+void blinkled(void);
+#define test1 1
 
 
-
-#endif /* SIMCOM_SIMCOM_H_ */
+#endif /* INC_SIMCOM_H_ */
