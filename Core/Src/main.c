@@ -28,6 +28,8 @@
 #include "stdlib.h"
 #include <math.h>
 
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -185,6 +187,8 @@ void sendingToSimcomA76xx(char *cmd)
   HAL_UART_Transmit(&huart1,(uint8_t *)cmd,strlen(cmd),1000);
 }
 
+
+
 /* USER CODE END 0 */
 
 /**
@@ -194,7 +198,7 @@ void sendingToSimcomA76xx(char *cmd)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	 blink(200);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -218,7 +222,7 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   MX_TIM6_Init();
-  //MX_IWDG_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart1,&rxData, 1);
   HAL_TIM_Base_Start_IT(&htim6);
@@ -459,7 +463,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, ON_OFF_PWM_Pin|A76XX_PWRKEY_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, ON_OFF_PWM_Pin|LED_Pin|A76XX_PWRKEY_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, PAYLOAD_4_Pin|PAYLOAD_3_Pin, GPIO_PIN_RESET);
@@ -467,8 +471,8 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, PAYLOAD_2_Pin|PAYLOAD_1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : ON_OFF_PWM_Pin A76XX_PWRKEY_Pin */
-  GPIO_InitStruct.Pin = ON_OFF_PWM_Pin|A76XX_PWRKEY_Pin;
+  /*Configure GPIO pins : ON_OFF_PWM_Pin LED_Pin A76XX_PWRKEY_Pin */
+  GPIO_InitStruct.Pin = ON_OFF_PWM_Pin|LED_Pin|A76XX_PWRKEY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
