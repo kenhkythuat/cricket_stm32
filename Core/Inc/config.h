@@ -9,7 +9,7 @@
 #ifndef INC_CONFIG_H_
 #define INC_CONFIG_H_
 
-#include "main.h"
+//#include "main.h"
 //#include "stdbool.h"
 //#include "stdio.h"
 //#include "stdlib.h"
@@ -22,7 +22,7 @@
 
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000156"
+  #define SERIAL_NUMBER "sw000155"
 #endif
 
 

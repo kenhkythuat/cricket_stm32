@@ -67,6 +67,8 @@ void Error_Handler(void);
 #define PAYLOAD_2_GPIO_Port GPIOB
 #define PAYLOAD_1_Pin GPIO_PIN_1
 #define PAYLOAD_1_GPIO_Port GPIOB
+#define LED_Pin GPIO_PIN_8
+#define LED_GPIO_Port GPIOA
 #define A76XX_PWRKEY_Pin GPIO_PIN_11
 #define A76XX_PWRKEY_GPIO_Port GPIOA
 
