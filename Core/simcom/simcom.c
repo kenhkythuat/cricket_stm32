@@ -6,3 +6,4 @@
  */
 #include"simcom.h"
 
+#include"stdio.h"
