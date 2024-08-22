@@ -39,6 +39,17 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+int _write(int file, char *ptr, int len)
+{
+
+  int i;
+
+  for (i = 0; i< len; i++)
+  {
+    ITM_SendChar(*ptr++);
+  }
+  return len;
+}
 
 /* USER CODE END PD */
 
@@ -105,6 +116,8 @@ int statusOfLoad;
 int testlength;
 int ledStatusSendTopic=0;
 
+
+//char rxBuffer[50];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -128,12 +141,16 @@ void informPayloadToServer(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart -> Instance == USART1)
 	{
+		printf("Response:");
+		printf(rxBuffer);
 		if((rxData!='\r')&&(rxData!='\n')){
 			simcomRxBuffer[rxIndex++]=rxData;
+
 			rxDataCouter++;
 		}
 		else{
@@ -169,7 +186,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			rxIndex=0;
 		}
 	}
-	HAL_UART_Receive_IT(&huart1, &rxData, 1);
+	 HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer, 50);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -221,9 +238,10 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   MX_TIM6_Init();
-  MX_IWDG_Init();
+  //MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1,&rxData, 1);
+ //HAL_UART_Receive_IT(&huart1,&rxData, 1);
+  HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer, 50);
   HAL_TIM_Base_Start_IT(&htim6);
   turnOnA76XX();
   HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port,ON_OFF_PWM_Pin,0);
@@ -248,8 +266,6 @@ int main(void)
 		  sendStatusPayloadToMQTT();
 		  sendPayloadStatusToServer= 0;
 	  }
-
-	  blinkled();
   }
   /* USER CODE END 3 */
 }
@@ -497,6 +513,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void turnOnA76XX(void){
+	printf("Enable SIMCOM\n");
 	HAL_GPIO_WritePin(A76XX_PWRKEY_GPIO_Port, A76XX_PWRKEY_Pin, SET);
 	HAL_Delay(3000);
 	HAL_GPIO_WritePin(A76XX_PWRKEY_GPIO_Port, A76XX_PWRKEY_Pin, RESET);
@@ -510,7 +527,7 @@ void turnOnA76XX(void){
 int connectSimcomA76xx(){
 	previousTick =  HAL_GetTick();
 	while(isConnectSimcomA76xx == 0 && previousTick  + timeOutConnectA76XX >  HAL_GetTick()){
-		if(strstr((char *)simcomRxBuffer,"PB DONE")){
+		if(strstr((char *)rxBuffer,"PB DONE")){
 			isPBDONE = 1;
 		}
 //		if(strstr((char *)simcomRxBuffer,"PDN ACT 1")){
@@ -519,20 +536,20 @@ int connectSimcomA76xx(){
 //		}
 		if(isPBDONE==1){
 			HAL_Delay(3000);
-			memset(simcomRxBuffer,'0',100);
+			memset(rxBuffer,'\0',100);
 			HAL_Delay(200);
 			sendingToSimcomA76xx(AT_CHECK_A76XX);
 			HAL_Delay(200);
-			if(strstr((char *)simcomRxBuffer,"OK")){
+			if(strstr((char *)rxBuffer,"OK")){
 				isATOK = 1;
 			}
 		}
 		if(isATOK==1){
-			memset(simcomRxBuffer,'0',100);
+			memset(rxBuffer,'\0',100);
 			HAL_Delay(200);
 			sendingToSimcomA76xx(AT_CHECK_ESIM);
 			HAL_Delay(200);
-			if(strstr((char *)simcomRxBuffer,"OKGREG: 0,1")){
+			if(strstr((char *)rxBuffer,"+CGREG: 0,1")){
 				isConnectSimcomA76xx = 1;
 			}
 		}

@@ -17,12 +17,12 @@
 
 // Codename of the farm, where we deploy this node to.
 #ifndef FARM
-  #define FARM "gateway-agriconnect"
+  #define FARM "demox"
 #endif
 
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000155"
+  #define SERIAL_NUMBER "sw000178"
 #endif
 
 
@@ -30,11 +30,11 @@
  * Global broker: mqtt.agriconnect.vn
  */
 #define MQTT_HOST "tcp://mqtt.agriconnect.vn"           		// MQTT broker
-#define MQTT_USER "mqttnode"                          // User - connect to MQTT broker
-#define MQTT_PASS "congamo"
+//#define MQTT_USER "mqttnode"                          // User - connect to MQTT broker
+//#define MQTT_PASS "congamo"
 // demox sử dụng để test
-//#define MQTT_USER "node" // User - connect to MQTT broker
-//#define MQTT_PASS "654321"// Password - connect to MQTT broker
+#define MQTT_USER "node" // User - connect to MQTT broker
+#define MQTT_PASS "654321"// Password - connect to MQTT broker
 #define MQTT_CLIENT_ID  SERIAL_NUMBER
 #define MQTT_PORT 1883
 
