@@ -249,7 +249,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  Level_Pin ();
-	  aray();
+
 //	  if(!isConnectSimcomA76xx){
 //		  isConnectSimcomA76xx = connectSimcomA76xx();
 //	  }
