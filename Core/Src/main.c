@@ -128,6 +128,17 @@ void informPayloadToServer(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int _write(int file, char *ptr, int len)
+{
+ int i;
+
+ for (i = 0; i < len; i++)
+ {
+   ITM_SendChar(*ptr++);
+ }
+ return len;
+
+}
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart -> Instance == USART1)
@@ -223,10 +234,10 @@ int main(void)
   MX_TIM6_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart1,&rxData, 1);
-  HAL_TIM_Base_Start_IT(&htim6);
-  turnOnA76XX();
-  HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port,ON_OFF_PWM_Pin,0);
+//  HAL_UART_Receive_IT(&huart1,&rxData, 1);
+//  HAL_TIM_Base_Start_IT(&htim6);
+//  turnOnA76XX();
+//  HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port,ON_OFF_PWM_Pin,0);
 
   /* USER CODE END 2 */
 
@@ -237,19 +248,21 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(!isConnectSimcomA76xx){
-		  isConnectSimcomA76xx = connectSimcomA76xx();
-	  }
-	  if(!isConnectMQTT){
-		  isConnectMQTT = connectMQTT();
-	  }
-	  //isPBDONE =test1;
-	  if(sendPayloadStatusToServer == 1){
-		  sendStatusPayloadToMQTT();
-		  sendPayloadStatusToServer= 0;
-	  }
+	  Level_Pin ();
+	  aray();
+//	  if(!isConnectSimcomA76xx){
+//		  isConnectSimcomA76xx = connectSimcomA76xx();
+//	  }
+//	  if(!isConnectMQTT){
+//		  isConnectMQTT = connectMQTT();
+//	  }
+//	  //isPBDONE =test1;
+//	  if(sendPayloadStatusToServer == 1){
+//		  sendStatusPayloadToMQTT();
+//		  sendPayloadStatusToServer= 0;
+//	  }
 
-	  blinkled();
+
   }
   /* USER CODE END 3 */
 }

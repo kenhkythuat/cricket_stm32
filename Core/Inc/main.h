@@ -53,7 +53,8 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void Level_Pin (void);
+void aray (void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
