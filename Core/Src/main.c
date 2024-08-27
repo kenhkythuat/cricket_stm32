@@ -43,7 +43,6 @@ int _write(int file, char *ptr, int len)
 {
 
   int i;
-
   for (i = 0; i< len; i++)
   {
     ITM_SendChar(*ptr++);
@@ -87,6 +86,9 @@ char AT_SUBCRIBE_TOPIC[]= "%s%d\r\n";
 char AT_SUBCRIBE[]="AT+CMQTTSUB=0\r\n";
 char AT_COMMAND[100];
 char AT_INFORM_PAYLOAD[]="{%d:%d}\r\n";
+float SignalStrength = 0;
+int onReay = 0;
+int rssi = -99;
 
 char STATUS_PAYLOAD_ARRAY_TOTAL[]="{\"1\":0,\"2\":0,\"3\":0,\"4\":0,\"5\":0,\"6\":0,\"7\":0,\"8\":0,\"9\":0,\"10\":0,\"11\":0,\"12\":0,\"13\":0,\"14\":0,\"15\":0,\"16\":0,\"17\":0,\"18\":0}";
 int timeOutConnectA76XX= 40000;
@@ -102,6 +104,7 @@ uint8_t rxData;
 uint16_t rxIndex;
 int loadflag = 0;
 char rxBuffer[100];
+char rx_data_sim[100];
 int previousTick;
 
 int isConnectSimcomA76xx= 0;
@@ -146,47 +149,55 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if(huart -> Instance == USART1)
 	{
-		printf("Response:");
+		printf("SIMCOM Response:");
 		printf(rxBuffer);
-		if((rxData!='\r')&&(rxData!='\n')){
-			simcomRxBuffer[rxIndex++]=rxData;
-
-			rxDataCouter++;
-		}
-		else{
-			if(isConnectMQTT==1){
-				switch(rxDataCouter){
-				case strlen(FARM)+16:
-					payLoadPin = (int)simcomRxBuffer[strlen(FARM)+15] -48;
-					loadflag = 1;
-					break;
-				case strlen(FARM)+17:
-					payLoadPin = ((int)simcomRxBuffer[strlen(FARM)+15] -48)*10+((int)simcomRxBuffer[strlen(FARM)+16]-48);
-					loadflag = 1;
-					break;
-				case 1:
-					if((loadflag==1)&&(payLoadPin<=NUMBER_LOADS)){
-						payLoadStatus = (int)simcomRxBuffer[0] -48;
-						if((payLoadStatus==0)||(payLoadStatus==1)){
-						HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin-1],GPIO_LOAD_PIN[payLoadPin-1],payLoadStatus);
-						}
-						//informPayloadToServer();
-						loadflag = 0;
+		for(int i=0; i<100;i++)
+		{
+			rx_data_sim[i]=rxBuffer[i];
+			if ((char)rxBuffer[i] == (char)SERIAL_NUMBER[5] && (char)rxBuffer[i + 1] == (char)SERIAL_NUMBER[6] && (char)rxBuffer[i + 2] == (char)SERIAL_NUMBER[7])
+			{
+                static int num_load = 0;
+                static int status;
+                num_load = rxBuffer[i + 4] - 48;
+                printf("-----------Receiver RELAY %d -----------\r\n", num_load);
+                if (rxBuffer[i + 31] == 49 && isPBDONE == true)
+				{
+					printf("-----------ON RELAY %d-----------\r\n", rxBuffer[i + 4] - 48);
+					payLoadPin= (rxBuffer[i + 4] - 48);
+					HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin-1],GPIO_LOAD_PIN[payLoadPin-1],1);
+					printf( "\n-------------TRANG THAI LED %d -------------------", status);
+					onReay++;
+					if (onReay >= NUMBER_LOADS)
+					{
+						onReay = NUMBER_LOADS;
 					}
-					break;
-				case 14:
-					if(strstr((char *)simcomRxBuffer,"CMQTTPUB: 0,0")){
-						IWDG->KR = 0xAAAA;
-						ledStatusSendTopic=1;
-					}
-				default:
+					status =HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i-1], GPIO_LOAD_PIN[i-1]);
+					printf( "\n-------------Number load ON %d -------------------", onReay);
 				}
+                if (rxBuffer[i + 31] == 48 && isPBDONE == true)
+				{
+					printf("-----------OFF RELAY %d-----------\r\n", rxBuffer[i + 4] - 48);
+					payLoadPin= (rxBuffer[i + 4] - 48);
+					HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin-1],GPIO_LOAD_PIN[payLoadPin-1],0);
+					printf( "\n-------------TRANG THAI LED %d -------------------", status);
+					onReay--;
+					if (onReay >0)
+					{
+						onReay = 0;
+					}
+					status =HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i-1], GPIO_LOAD_PIN[i-1]);
+					printf( "\n-------------Number load ON %d -------------------", onReay);
+				}
+
 			}
+
+		}
 			rxDataCouter=0;
 			rxIndex=0;
-		}
+			memset(rxBuffer,'\0',100);
+
 	}
-	 HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer, 50);
+	 HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer, 100);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -201,7 +212,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 void sendingToSimcomA76xx(char *cmd)
 {
-  HAL_UART_Transmit(&huart1,(uint8_t *)cmd,strlen(cmd),1000);
+	printf("STM32 Write: %s",cmd);
+	HAL_UART_Transmit(&huart1,(uint8_t *)cmd,strlen(cmd),1000);
 }
 
 
@@ -241,7 +253,8 @@ int main(void)
   //MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
  //HAL_UART_Receive_IT(&huart1,&rxData, 1);
-  HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer, 50);
+  printf("-----Welcom to Agriconnet-----\n");
+  HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t*) rxBuffer,100);
   HAL_TIM_Base_Start_IT(&htim6);
   turnOnA76XX();
   HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port,ON_OFF_PWM_Pin,0);
@@ -409,7 +422,7 @@ static void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 39999;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 1999;
+  htim6.Init.Period = 2999;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -527,7 +540,7 @@ void turnOnA76XX(void){
 int connectSimcomA76xx(){
 	previousTick =  HAL_GetTick();
 	while(isConnectSimcomA76xx == 0 && previousTick  + timeOutConnectA76XX >  HAL_GetTick()){
-		if(strstr((char *)rxBuffer,"PB DONE")){
+		if(strstr((char *)rx_data_sim,"PB DONE")){
 			isPBDONE = 1;
 		}
 //		if(strstr((char *)simcomRxBuffer,"PDN ACT 1")){
@@ -535,12 +548,20 @@ int connectSimcomA76xx(){
 //			HAL_Delay(5000);
 //		}
 		if(isPBDONE==1){
-			HAL_Delay(3000);
+			HAL_Delay(200);
 			memset(rxBuffer,'\0',100);
+			sendingToSimcomA76xx("ATE0\r\n");
 			HAL_Delay(200);
-			sendingToSimcomA76xx(AT_CHECK_A76XX);
+			sendingToSimcomA76xx("AT+CSQ\r\n");
 			HAL_Delay(200);
-			if(strstr((char *)rxBuffer,"OK")){
+			SignalStrength = (rx_data_sim[8] - 48) * 10 + (rx_data_sim[9] - 48);
+			if(SignalStrength>=31)
+			{
+				rssi=-51;
+			}else rssi = (SignalStrength * 2 - 113);
+			isConnectSimcomA76xx = 1;
+			HAL_Delay(200);
+			if(strstr((char *)rx_data_sim,"OK")){
 				isATOK = 1;
 			}
 		}
@@ -549,7 +570,7 @@ int connectSimcomA76xx(){
 			HAL_Delay(200);
 			sendingToSimcomA76xx(AT_CHECK_ESIM);
 			HAL_Delay(200);
-			if(strstr((char *)rxBuffer,"+CGREG: 0,1")){
+			if(strstr((char *)rx_data_sim,"+CGREG: 0,1")){
 				isConnectSimcomA76xx = 1;
 			}
 		}
@@ -591,7 +612,7 @@ int connectMQTT(void){
 		HAL_Delay(200);
 		while(isConnectMQTT == 0 && previousTick  + timeOutConnectMQTT >  HAL_GetTick()){
 
-			if(strstr((char *)simcomRxBuffer,"CMQTTSUB: 0,0")){
+			if(strstr((char *)rx_data_sim,"CMQTTSUB: 0,0")){
 					isConnectMQTT=1;
 			}
 		}
@@ -600,13 +621,11 @@ int connectMQTT(void){
 		}
 	}
 	if(isConnectMQTT==1){
-		MX_IWDG_Init();
+		//MX_IWDG_Init();
 	}
 	return isConnectMQTT;
 }
 int sendStatusPayloadToMQTT(){
-	//lengthOfStatusPayloadArray = (7*NUMBER_LOADS) +(NUMBER_LOADS-1)+2;
-	//STATUS_PAYLOAD_ARRAY[lengthOfStatusPayloadArray];
 	if(NUMBER_LOADS<10){
 		memcpy(STATUS_PAYLOAD_ARRAY_0_9,STATUS_PAYLOAD_ARRAY_TOTAL,LENGTH_STATUS_PAYLOAD_0_9-1);
 		STATUS_PAYLOAD_ARRAY_0_9[LENGTH_STATUS_PAYLOAD_0_9-1] = '}';
@@ -620,10 +639,8 @@ int sendStatusPayloadToMQTT(){
 		sprintf(AT_COMMAND,"%s\r\n",MQTT_TOPIC_ACTUATOR_STATUS);
 		sendingToSimcomA76xx(AT_COMMAND);
 		HAL_Delay(500);
-
 		//sprintf(AT_COMMAND,STATUS_PAYLOAD_ARRAY_0_9,payLoadPin,payLoadStatus);
 		int lengthOfInformPayload = strlen(STATUS_PAYLOAD_ARRAY_0_9);
-
 		sprintf(AT_COMMAND,AT_SET_PUBLISH_PAYLOAD,lengthOfInformPayload);
 		sendingToSimcomA76xx(AT_COMMAND);
 		HAL_Delay(500);
@@ -633,53 +650,9 @@ int sendStatusPayloadToMQTT(){
 		sendingToSimcomA76xx(AT_PUBLISH);
 		HAL_Delay(500);
 	}
-	else{
-		memcpy(STATUS_PAYLOAD_ARRAY_10_18,STATUS_PAYLOAD_ARRAY_TOTAL,LENGTH_STATUS_PAYLOAD_10_18-1);
-		STATUS_PAYLOAD_ARRAY_10_18[LENGTH_STATUS_PAYLOAD_10_18-1] = '}';
-		for(int i=1;i<10;i++){
-			statusOfLoad = HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i-1], GPIO_LOAD_PIN[i-1]);
-			STATUS_PAYLOAD_ARRAY_10_18[i*6-1] = statusOfLoad+48;
-
-		}
-		int j=0;
-		for(int i=10;i<NUMBER_LOADS+1;i++){
-			j++;
-			statusOfLoad = HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i-1], GPIO_LOAD_PIN[i-1]);
-			STATUS_PAYLOAD_ARRAY_10_18[i*6+j-1] = statusOfLoad+48;
-		}
-
-		sprintf(AT_COMMAND,AT_SET_PUBLISH_TOPIC,strlen(MQTT_TOPIC_ACTUATOR_STATUS)); // Set the topic for publish message
-		sendingToSimcomA76xx(AT_COMMAND);
-		HAL_Delay(200);
-		sprintf(AT_COMMAND,"%s\r\n",MQTT_TOPIC_ACTUATOR_STATUS);
-		sendingToSimcomA76xx(AT_COMMAND);
-		HAL_Delay(200);
-
-		//sprintf(AT_COMMAND,STATUS_PAYLOAD_ARRAY_0_9,payLoadPin,payLoadStatus);
-		int lengthOfInformPayload = strlen(STATUS_PAYLOAD_ARRAY_10_18);
-
-		sprintf(AT_COMMAND,AT_SET_PUBLISH_PAYLOAD,lengthOfInformPayload);
-		sendingToSimcomA76xx(AT_COMMAND);
-		HAL_Delay(200);
-		//sprintf(AT_COMMAND,AT_INFORM_PAYLOAD,payLoadPin,payLoadStatus);
-		sendingToSimcomA76xx(STATUS_PAYLOAD_ARRAY_10_18);
-		HAL_Delay(200);// Set the payload
-		sendingToSimcomA76xx(AT_PUBLISH);
-		HAL_Delay(200);
-
-	}
-
-//	if(ledStatusSendTopic == 1){
-//		ledStatus('W');
-//		HAL_Delay(500);
-//		ledStatus('G');
-//		ledStatusSendTopic= 0;
-//	}
 	//sendPayloadStatusToServer = 0;
 	return 1;
 }
-
-
 
 /* USER CODE END 4 */
 
