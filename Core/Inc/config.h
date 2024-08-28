@@ -11,21 +11,33 @@
 
 //#include "main.h"
 //#include "stdbool.h"
-//#include "stdio.h"
+#include "stdio.h"
 //#include "stdlib.h"
 //#include "string.h"
+#include <string.h>
 
 // Codename of the farm, where we deploy this node to.
-#ifndef FARM
-  #define FARM "demox"
-#endif
+//  #define FARM "gateway-agriconnect"
 
+#define FARM "gateway-agriconnect"
+//#define FARM "demox"
+#define a7672 1
+#define a7670 2
+#define SIMCOM_MODEL a7672    // #defualt is a7670 if you use model other please choose enter your model
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000183"
+  #define SERIAL_NUMBER "sw000195"
 #endif
 
+#define MQTT_USER "node" 		// User - connect to MQTT broker
+#define MQTT_PASS "654321"		// Password - connect to MQTT broker
 
+//#define MQTT_USER "mqttnode"       // User - connect to MQTT broker
+//#define MQTT_PASS "congamo"		// Password - connect to MQTT broker
+
+#define MQTT_TOPIC_ACTUATOR_STATUS FARM "/sn/" SERIAL_NUMBER "/as/"
+// MQTT topic to subscribe and get command to switch on/off actuator
+#define MQTT_TOPIC_ACTUATOR_CONTROL FARM "/snac/" SERIAL_NUMBER "/"
 /** MQTT
  * Global broker: mqtt.agriconnect.vn
  */
@@ -33,14 +45,13 @@
 //#define MQTT_USER "mqttnode"                          // User - connect to MQTT broker
 //#define MQTT_PASS "congamo"
 // demox sử dụng để test
-#define MQTT_USER "node" // User - connect to MQTT broker
-#define MQTT_PASS "654321"// Password - connect to MQTT broker
+
+
 #define MQTT_CLIENT_ID  SERIAL_NUMBER
 #define MQTT_PORT 1883
 
-#define MQTT_TOPIC_ACTUATOR_STATUS FARM "/sn/" SERIAL_NUMBER "/as/"
-// MQTT topic to subscribe and get command to switch on/off actuator
-#define MQTT_TOPIC_ACTUATOR_CONTROL FARM "/snac/" SERIAL_NUMBER "/"
+
+
 
 #define NUMBER_LOADS 4
 #define LENGTH_STATUS_PAYLOAD_0_9  6*NUMBER_LOADS + 1

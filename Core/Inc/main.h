@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+float Level_Pin (void);
 
 /* USER CODE END Includes */
 
@@ -46,6 +47,11 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
+extern void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
+extern int connectMQTT(void);
+extern void sendingToSimcomA76xx(char *cmd);
+extern void create_JSON(void);
+extern float fn_check_signal_simcom(void);
 
 /* USER CODE END EM */
 
@@ -67,12 +73,31 @@ void Error_Handler(void);
 #define PAYLOAD_2_GPIO_Port GPIOB
 #define PAYLOAD_1_Pin GPIO_PIN_1
 #define PAYLOAD_1_GPIO_Port GPIOB
-#define LED_Pin GPIO_PIN_8
-#define LED_GPIO_Port GPIOA
+#define LED_STATUS_Pin GPIO_PIN_12
+#define LED_STATUS_GPIO_Port GPIOB
 #define A76XX_PWRKEY_Pin GPIO_PIN_11
 #define A76XX_PWRKEY_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+extern char rxBuffer[150];
+extern char rx_data_sim[150];
+extern char AT_COMMAND[100];
+extern int isPBDONE;
+extern int isATOK;
+extern int onReay;
+extern int isConnectMQTT;
+extern int previousTick;
+extern int timeOutConnectMQTT;
+extern int payLoadPin,payLoadStatus;
+extern char array_json[100];
+extern float Data_Percentage_pin;
+extern float SignalStrength;
+extern int rssi;
+extern int isConnectSimcomA76xx;
+extern GPIO_TypeDef* GPIO_LOAD_PORT[4];
+extern unsigned int GPIO_LOAD_PIN[4];
+
+
 
 /* USER CODE END Private defines */
 
