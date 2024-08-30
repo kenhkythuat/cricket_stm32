@@ -6,7 +6,4 @@
  */
 #include "simcom.h"
 
-void blinkled(void)
-{
-
-}
+void blinkled(void) {}

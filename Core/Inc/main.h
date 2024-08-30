@@ -28,11 +28,11 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+#include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 float Level_Pin (void);
-
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -42,6 +42,8 @@ float Level_Pin (void);
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+#define a7672 1
+#define a7670 2
 
 /* USER CODE END EC */
 
@@ -52,7 +54,18 @@ extern int connectMQTT(void);
 extern void sendingToSimcomA76xx(char *cmd);
 extern void create_JSON(void);
 extern float fn_check_signal_simcom(void);
-
+extern int acquire_gsm_mqtt_client(void);
+extern int enable_mqtt_on_gsm_modem(void);
+extern int connect_mqtt_server_by_gsm(void);
+extern int subscribe_mqtt_via_gsm(void);
+extern int publish_mqtt_via_gsm(void);
+extern int read_signal_quality(void);
+extern int stop_mqtt_via_gsm(void);
+extern int check_error_mqtt_via_gsm(void);
+extern int update_status(void);
+extern void restart_stm32(void);
+extern int init_cricket(void);
+extern int event_wait_function(void);
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -94,6 +107,13 @@ extern float Data_Percentage_pin;
 extern float SignalStrength;
 extern int rssi;
 extern int isConnectSimcomA76xx;
+extern bool fn_Enable_MQTT;
+extern bool fn_Connect_MQTT;
+extern bool fn_CheckSim;
+extern bool fn_Subcribe_MQTT;
+extern bool fn_Publish_MQTT;
+extern bool fn_Acquier_MQTT;
+extern bool fn_update_status;
 extern GPIO_TypeDef* GPIO_LOAD_PORT[4];
 extern unsigned int GPIO_LOAD_PIN[4];
 

@@ -1,32 +1,27 @@
 /*
  * config.h
  *
- *  Created on: Nov 15, 2023
- *      Author: nguyenthanhtoan1095
+ *  Created on: AUG 1, 2024
+ *      Author: thuanphat7
  */
 
 
 #ifndef INC_CONFIG_H_
 #define INC_CONFIG_H_
 
-//#include "main.h"
-//#include "stdbool.h"
 #include "stdio.h"
-//#include "stdlib.h"
-//#include "string.h"
 #include <string.h>
 
 // Codename of the farm, where we deploy this node to.
 //  #define FARM "gateway-agriconnect"
 
-#define FARM "gateway-agriconnect"
-//#define FARM "demox"
-#define a7672 1
-#define a7670 2
-#define SIMCOM_MODEL a7672    // #defualt is a7670 if you use model other please choose enter your model
+//#define FARM "gateway-agriconnect"
+#define FARM "demox"
+
+#define SIMCOM_MODEL a7670    // #defualt is a7670 if you use model other please choose enter your model
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000195"
+  #define SERIAL_NUMBER "sw000183"
 #endif
 
 #define MQTT_USER "node" 		// User - connect to MQTT broker
@@ -42,10 +37,6 @@
  * Global broker: mqtt.agriconnect.vn
  */
 #define MQTT_HOST "tcp://mqtt.agriconnect.vn"           		// MQTT broker
-//#define MQTT_USER "mqttnode"                          // User - connect to MQTT broker
-//#define MQTT_PASS "congamo"
-// demox sử dụng để test
-
 
 #define MQTT_CLIENT_ID  SERIAL_NUMBER
 #define MQTT_PORT 1883
