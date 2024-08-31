@@ -148,7 +148,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (isConnectMQTT) {
       sendPayloadStatusToServer = 1;
     }
-    // update_10_minute++;
+	 IWDG->KR = 0xAAAA;
+//	 update_10_minute++;
+
   }
   HAL_TIM_Base_Start_IT(&htim6);
 }

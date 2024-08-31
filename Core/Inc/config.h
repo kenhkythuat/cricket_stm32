@@ -18,7 +18,7 @@
 //#define FARM "gateway-agriconnect"
 #define FARM "demox"
 
-#define SIMCOM_MODEL a7670    // #defualt is a7670 if you use model other please choose enter your model
+#define SIMCOM_MODEL a7670   // #defualt is a7670 if you use model other please choose enter your model
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
   #define SERIAL_NUMBER "sw000183"

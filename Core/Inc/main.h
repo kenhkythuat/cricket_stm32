@@ -66,6 +66,7 @@ extern int update_status(void);
 extern void restart_stm32(void);
 extern int init_cricket(void);
 extern int event_wait_function(void);
+extern int check_active_payload(void);
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

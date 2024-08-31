@@ -322,12 +322,12 @@ int update_status(void) {
   fn_Publish_MQTT = publish_mqtt_via_gsm();
   if (!fn_Publish_MQTT) {
     int temp = 0;
-    for (int i = 1; i <= 10; i++) {
+    for (int i = 1; i <= 15; i++) {
       temp = check_error_mqtt_via_gsm();
       if (!temp) {
         count_errors++;
         printf("-----------------UPDATE FAIL %d!------------------\n", count_errors);
-        if (count_errors >= 9) {
+        if (count_errors >= 15) {
           restart_stm32();
         }
       } else {
@@ -341,6 +341,7 @@ int update_status(void) {
 void restart_stm32(void) {
   printf("\r\n-----------------Restart STM32------------------\r\n");
   printf("\r\n-----------------GOOD BYE !------------------\r\n");
+  stop_mqtt_via_gsm();
   NVIC_SystemReset();
 }
 int init_cricket(void) {
@@ -362,6 +363,7 @@ int init_cricket(void) {
     if (fn_Connect_MQTT) {
       fn_Subcribe_MQTT = subscribe_mqtt_via_gsm();
       if (fn_Subcribe_MQTT) {
+    	  HAL_GPIO_WritePin(GPIOB,LED_STATUS_Pin, GPIO_PIN_SET);
         isConnectMQTT = true;
         inital_check = true;
         return 1;
@@ -391,4 +393,26 @@ int event_wait_function(void) {
   }
 
   return 0;
+}
+int check_active_payload(void)
+{
+	for(int i=1; i<=4;i++)
+	{
+		static int temp=0;
+		temp=HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i - 1], GPIO_LOAD_PIN[i - 1]);
+		if(temp==1)
+		{
+			onReay++;
+		}
+		else onReay--;
+	}
+	if(onReay>=NUMBER_LOADS)
+	{
+		onReay=NUMBER_LOADS;
+	}
+	if(onReay<0)
+	{
+		onReay=0;
+	}
+	return onReay;
 }

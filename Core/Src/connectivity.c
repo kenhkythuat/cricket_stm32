@@ -25,50 +25,49 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
   if (huart->Instance == USART1) {
     printf("\r\nSIMCOM Response:");
     printf(rxBuffer);
-    if ((strstr((char *)rx_data_sim, "+CMQTTCONNLOST") != NULL) && isPBDONE == true) {
-      printf("-----------------Client Disconnect passively!------------------\n");
-      check_error_mqtt_via_gsm();
-    }
     for (int i = 0; i < 150; i++) {
       // printf("data[%d]: %c\r\n", i, rxBuffer[i]);
       rx_data_sim[i] = rxBuffer[i];
       if ((char)rxBuffer[i] == (char)SERIAL_NUMBER[5] && (char)rxBuffer[i + 1] == (char)SERIAL_NUMBER[6] && (char)rxBuffer[i + 2] == (char)SERIAL_NUMBER[7]) {
-        static int num_load = 0;
+        //static int num_load = 0;
         // static int status;
-        num_load = (rxBuffer[i + 4] - 48);
-        printf("-----------Receiver RELAY %d -----------\r\n", num_load);
+        payLoadPin = (rxBuffer[i + 4] - 48);
+        printf("-----------Receiver RELAY %d -----------\r\n", payLoadPin);
 #if SIMCOM_MODEL == a7672
         if (rxBuffer[(i + 29)] == 49 && isPBDONE == true)
 #elif SIMCOM_MODEL == a7670
         if (rxBuffer[(i + 31)] == 49 && isPBDONE == true)
 #endif
         {
-          payLoadPin = (rxBuffer[i + 4] - 48);
+          //payLoadPin = (rxBuffer[i + 4] - 48);
           HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin - 1], GPIO_LOAD_PIN[payLoadPin - 1], 1);
+          onReay++;
           if (onReay >= NUMBER_LOADS) {
             onReay = NUMBER_LOADS;
-          } else
-            ++onReay;
+          }
           HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 0);
         }
-
 #if SIMCOM_MODEL == a7672
         if (rxBuffer[(i + 29)] == 48 && isPBDONE == true)
 #elif SIMCOM_MODEL == a7670
         if (rxBuffer[(i + 31)] == 48 && isPBDONE == true)
 #endif
         {
-          payLoadPin = (rxBuffer[i + 4] - 48);
+          //payLoadPin = (rxBuffer[i + 4] - 48);
           HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin - 1], GPIO_LOAD_PIN[payLoadPin - 1], 0);
           --onReay;
           if (onReay <= 0) {
             onReay = 0;
             HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 1);
-            // sendingToSimcomA76xx("AT+CSCLK=2\r\n");
           }
         }
       }
     }
+    if ((strstr((char *)rxBuffer, "+CMQTTCONNLOST") != NULL) && isPBDONE == true) {
+      printf("-----------------Client Disconnect passively!------------------\n");
+     check_error_mqtt_via_gsm();
+    }
+    //onReay=check_active_payload();
     memset(rxBuffer, '\0', 150);
   }
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t *)rxBuffer, 150);
@@ -87,7 +86,7 @@ int connectMQTT(void) {
   sprintf(AT_COMMAND, "AT+CMQTTACCQ=0,\"%s\",0\r\n", MQTT_CLIENT_ID);
   sendingToSimcomA76xx(AT_COMMAND);
   HAL_Delay(200);
-  sprintf(AT_COMMAND, "AT+CMQTTCONNECT=0,\"%s:%d\",60,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
+  sprintf(AT_COMMAND, "AT+CMQTTCONNECT=0,\"%s:%d\",500,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
   sendingToSimcomA76xx(AT_COMMAND);
   HAL_Delay(200);
   for (int i = 1; i <= NUMBER_LOADS; i++) {
