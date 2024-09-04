@@ -131,6 +131,7 @@ bool fn_update_status = false;
 uint32_t address = 0x0801FC00;
 uint32_t data = 0x01;
 uint32_t read_data=3;
+uint32_t value_page[4];
 // char rxBuffer[50];
 /* USER CODE END PV */
 
@@ -233,13 +234,20 @@ int main(void) {
   MX_TIM6_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 1);
+  Read_Page();
+  HAL_GPIO_WritePin(PAYLOAD_1_GPIO_Port, PAYLOAD_1_Pin, value_page0);
+  HAL_GPIO_WritePin(PAYLOAD_2_GPIO_Port, PAYLOAD_2_Pin, value_page1);
+  HAL_GPIO_WritePin(PAYLOAD_3_GPIO_Port, PAYLOAD_3_Pin, value_page2);
+  HAL_GPIO_WritePin(PAYLOAD_4_GPIO_Port, PAYLOAD_4_Pin, value_page3);
+  onReay = value_Relay;
+
   printf("-----Welcom to Agriconnect-----\n");
   printf("-----Hello Cricket-----\n");
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t *)rxBuffer, 150);
   HAL_TIM_Base_Start_IT(&htim6);
   turnOnA76XX();
   isPBDONE = event_wait_function();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -248,6 +256,7 @@ int main(void) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
     if (!isConnectMQTT) {
       isConnectMQTT = init_cricket();
     }

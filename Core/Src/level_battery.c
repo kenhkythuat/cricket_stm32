@@ -21,7 +21,9 @@ float Level_Pin(void) {
   HAL_ADC_PollForConversion(&hadc1, 500);
   HAL_ADC_Start(&hadc1);
   ADC_Value = HAL_ADC_GetValue(&hadc1);
+  // vol 0 -> 3.05 <=> 0 -> 3250 ADC
   Level_pin = map(ADC_Value, 0, 3250, 0, 3.05);
+  // 2.5vol -> 3vol => 0% -> 100%
   Percentage_pin = ((Level_pin - 2.5) * 100) / 0.5;
   if (Percentage_pin > 100) {
     Percentage_pin = 100;

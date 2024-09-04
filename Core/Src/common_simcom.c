@@ -317,6 +317,8 @@ int stop_mqtt_via_gsm(void) {
   return 0;
 }
 int update_status(void) {
+	read_statusload();
+	printf("write 0xfffff ok\n");
   fn_Publish_MQTT = publish_mqtt_via_gsm();
   if (!fn_Publish_MQTT) {
     int temp = 0;

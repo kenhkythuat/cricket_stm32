@@ -33,6 +33,15 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 float Level_Pin (void);
+void read_statusload();
+void Flash_Erase(uint32_t numberpages);
+void Flash_write(int move ,uint32_t Data);
+uint32_t Read_Page();
+extern uint32_t value_page0;
+extern uint32_t value_page1;
+extern uint32_t value_page2;
+extern uint32_t value_page3;
+extern uint32_t value_Relay;
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
