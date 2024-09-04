@@ -57,10 +57,12 @@ float fn_check_signal_simcom(void) {
     printf("-----------------SIM OK !------------------\n");
   } else
     return 0;
+  sendingToSimcomA76xx("AT+CREG=2\r\n");
+  HAL_Delay(5000);
   HAL_Delay(200);
   sendingToSimcomA76xx("AT+CREG?\r\n");
-  HAL_Delay(2000);
-  if (strstr((char *)rx_data_sim, "+CREG: 0,1") || strstr((char *)rx_data_sim, "+CREG: 0,6")) {
+  HAL_Delay(200);
+  if (strstr((char *)rx_data_sim, "+CREG: 0,1") || strstr((char *)rx_data_sim, "+CREG: ,6")||strstr((char *)rx_data_sim, "+CREG: 2,6")) {
     printf("-----------------Network registration OK!------------------\n");
   } else
     return 0;
@@ -120,7 +122,7 @@ int acquire_gsm_mqtt_client(void) {
   return 0;
 }
 int connect_mqtt_server_by_gsm(void) {
-  sprintf(AT_COMMAND, "+CMQTTCONNECT: 0,\"%s:%d\",60,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
+  sprintf(AT_COMMAND, "+CMQTTCONNECT: 0,\"%s:%d\",20,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
   HAL_Delay(200);
   sendingToSimcomA76xx("AT+CMQTTCONNECT?\r\n");
   HAL_Delay(200);
@@ -133,7 +135,7 @@ int connect_mqtt_server_by_gsm(void) {
     AT_Connect_MQTT = false;
   }
   if (AT_Connect_MQTT == false) {
-    sprintf(AT_COMMAND, "AT+CMQTTCONNECT=0,\"%s:%d\",60,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
+    sprintf(AT_COMMAND, "AT+CMQTTCONNECT=0,\"%s:%d\",20,1,\"%s\",\"%s\"\r\n", MQTT_HOST, MQTT_PORT, MQTT_USER, MQTT_PASS);
     sendingToSimcomA76xx(AT_COMMAND);
     HAL_Delay(500);
     if (strstr((char *)rx_data_sim, "+CMQTTCONNECT: 0,0") != NULL) {
@@ -186,12 +188,10 @@ int publish_mqtt_via_gsm(void) {
   sendingToSimcomA76xx(AT_COMMAND);
   HAL_Delay(500);
   if (strstr((char *)rx_data_sim, "OK") != NULL) {
-    printf("----------------- Sent input the topic of a publish message "
-           "success ! ------------------\n");
+    printf("----------------- Sent input the topic of a publish message success ! ------------------\n");
     AT_Topic_Puplish_MQTT = true;
   } else {
-    printf("----------------- Sent input the topic of a publish message fail ! "
-           "------------------\n");
+    printf("----------------- Sent input the topic of a publish message fail !------------------\n");
     AT_Topic_Puplish_MQTT = false;
   }
   if (AT_Topic_Puplish_MQTT) {
@@ -203,12 +203,10 @@ int publish_mqtt_via_gsm(void) {
     sendingToSimcomA76xx(array_json);
     HAL_Delay(500);
     if (strstr((char *)rx_data_sim, "OK") != NULL) {
-      printf("----------------- Sent input the message body of a publish "
-             "message ! ------------------\n");
+      printf("----------------- Sent input the message body of a publish message ! ------------------\n");
       AT_Data_Puplish_MQTT = true;
     } else {
-      printf("----------------- Sent input the message body of a publish fail "
-             "! ------------------\n");
+      printf("----------------- Sent input the message body of a publish fail! ------------------\n");
       AT_Data_Puplish_MQTT = false;
     }
     if (AT_Data_Puplish_MQTT) {
@@ -249,7 +247,7 @@ int check_error_mqtt_via_gsm(void) {
     return 0;
   }
   if (fn_Acquier_MQTT) {
-    for (int i = 0; i <= 3; i++) {
+    for (int i = 0; i <= 5; i++) {
       fn_Connect_MQTT = connect_mqtt_server_by_gsm();
       if (fn_Connect_MQTT) {
         break;
@@ -323,7 +321,7 @@ int update_status(void) {
   if (!fn_Publish_MQTT) {
     int temp = 0;
     for (int i = 1; i <= 15; i++) {
-      temp = check_error_mqtt_via_gsm();
+    	temp = check_error_mqtt_via_gsm();
       if (!temp) {
         count_errors++;
         printf("-----------------UPDATE FAIL %d!------------------\n", count_errors);
@@ -345,6 +343,7 @@ void restart_stm32(void) {
   NVIC_SystemReset();
 }
 int init_cricket(void) {
+printf("\r\n-----------------INIT CRICKET !------------------\r\n");
   if (isPBDONE == true) {
     if (!fn_CheckSim) {
       fn_CheckSim = fn_check_signal_simcom();

@@ -47,6 +47,14 @@ int _write(int file, char *ptr, int len) {
   return len;
 }
 
+//void ITM_Printf(const char *msg)
+//{
+//    while (*msg)
+//    {
+//        ITM_SendChar(*msg++);
+//    }
+//}
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -119,6 +127,10 @@ bool fn_Publish_MQTT = false;
 bool fn_Acquier_MQTT = false;
 bool fn_update_status = false;
 
+
+uint32_t address = 0x0801FC00;
+uint32_t data = 0x01;
+uint32_t read_data=3;
 // char rxBuffer[50];
 /* USER CODE END PV */
 
@@ -154,7 +166,39 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   }
   HAL_TIM_Base_Start_IT(&htim6);
 }
+void Flash_Write(uint32_t address, uint32_t data)
+{
+    // Mở khóa bộ nhớ Flash
+    HAL_FLASH_Unlock();
 
+    // Cấu hình xóa trang Flash
+    FLASH_EraseInitTypeDef EraseInitStruct;
+    uint32_t PageError = 0;
+
+    EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
+    EraseInitStruct.PageAddress = address;
+    EraseInitStruct.NbPages = 1;
+
+    // Xóa trang Flash
+    if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
+    {
+        // Xử lý lỗi nếu có
+    }
+
+    // Ghi dữ liệu vào Flash
+    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data) != HAL_OK)
+    {
+        // Xử lý lỗi nếu có
+    }
+
+    // Khóa lại bộ nhớ Flash
+    HAL_FLASH_Lock();
+}
+uint32_t Flash_Read(uint32_t address)
+{
+    // Đọc dữ liệu từ địa chỉ Flash
+    return *(__IO uint32_t*)address;
+}
 /* USER CODE END 0 */
 
 /**

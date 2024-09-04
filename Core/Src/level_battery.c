@@ -29,7 +29,7 @@ float Level_Pin(void) {
     Percentage_pin = 0;
   }
   HAL_ADC_Stop(&hadc1);
-  HAL_Delay(200);
+  HAL_Delay(50);
   Value_Level[count] = Percentage_pin;
   count++;
   if (count == 10) {
