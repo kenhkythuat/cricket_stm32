@@ -125,9 +125,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == htim6.Instance) {
     if (isConnectMQTT) {
       update_status_to_server = 1;
+      update_10_minute++;
     }
     IWDG->KR = 0xAAAA;
-    //	 update_10_minute++;
   }
   HAL_TIM_Base_Start_IT(&htim6);
 }
@@ -165,15 +165,10 @@ int main(void) {
   MX_TIM6_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  Read_Page();
-  HAL_GPIO_WritePin(PAYLOAD_1_GPIO_Port, PAYLOAD_1_Pin, value_page0);
-  HAL_GPIO_WritePin(PAYLOAD_2_GPIO_Port, PAYLOAD_2_Pin, value_page1);
-  HAL_GPIO_WritePin(PAYLOAD_3_GPIO_Port, PAYLOAD_3_Pin, value_page2);
-  HAL_GPIO_WritePin(PAYLOAD_4_GPIO_Port, PAYLOAD_4_Pin, value_page3);
-  onReay = value_Relay;
 
-  printf("-----Welcom to Agriconnect-----\n");
+  printf("-----Welcome to Agriconnect-----\n");
   printf("-----Hello Cricket-----\n");
+  read_flash_payload();
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t *)rxBuffer, 150);
   HAL_TIM_Base_Start_IT(&htim6);
   turnOnA76XX();
@@ -192,11 +187,15 @@ int main(void) {
       isConnectMQTT = init_cricket();
     }
     if (update_status_to_server == 1) {
-      if (onReay > 0) {
         fn_update_status = update_status();
         update_status_to_server = 0;
-      }
     }
+    if(update_10_minute>=2)
+    {
+    	read_statusload();
+    	update_10_minute=0;
+    }
+
   }
   /* USER CODE END 3 */
 }

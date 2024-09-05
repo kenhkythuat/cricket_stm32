@@ -29,18 +29,23 @@ void Flash_Erase(uint32_t numberpages) {
   HAL_FLASHEx_Erase(&pEraseInit, &PageError);
   HAL_FLASH_Lock();
 }
-uint32_t Read_Page() {
-  value_page0 = *(uint32_t *)(Address);
-  value_page1 = *(uint32_t *)(Address + 16);
-  value_page2 = *(uint32_t *)(Address + 32);
-  value_page3 = *(uint32_t *)(Address + 48);
-  value_Relay = *(uint32_t *)(Address + 64);
-  return value_page0;
-  return value_page1;
-  return value_page2;
-  return value_page3;
+
+void read_flash_payload(void)
+{
+	for(int i=0;i<=3;i++)
+	{
+		static int temp;
+		temp=Read_Page(Address+(i*16));
+		HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin+i], GPIO_LOAD_PIN[payLoadPin+i],temp);
+	}
+	onReay = *(uint32_t *)(Address + 64);
 }
 
+
+uint32_t Read_Page(uint32_t Address_ex) {
+  value_page0 = *(uint32_t *)(Address_ex);
+  return value_page0;
+}
 void Flash_write(int move, uint32_t Data) {
   HAL_FLASH_Unlock();
   HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address + move, Data);
@@ -49,7 +54,7 @@ void Flash_write(int move, uint32_t Data) {
 }
 
 void read_statusload() {
-  Flash_Erase(4);
+  Flash_Erase(1);
   for (int i = 0; i < 4; i++) {
     Read = HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i], GPIO_LOAD_PIN[i]);
     status_load[val] = Read;
@@ -58,7 +63,6 @@ void read_statusload() {
   val = 0;
   Flash_write(0, status_load[0]);
   printf("Write ok at 0x%08X\r\n", Address + 0);
-  ;
   Flash_write(16, status_load[1]);
   printf("Write ok at 0x%08X\r\n", Address + 16);
   Flash_write(32, status_load[2]);
