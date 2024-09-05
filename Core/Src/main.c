@@ -47,14 +47,6 @@ int _write(int file, char *ptr, int len) {
   return len;
 }
 
-//void ITM_Printf(const char *msg)
-//{
-//    while (*msg)
-//    {
-//        ITM_SendChar(*msg++);
-//    }
-//}
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -75,49 +67,23 @@ UART_HandleTypeDef huart1;
 GPIO_TypeDef *GPIO_LOAD_PORT[4] = {PAYLOAD_1_GPIO_Port, PAYLOAD_2_GPIO_Port, PAYLOAD_3_GPIO_Port, PAYLOAD_4_GPIO_Port};
 unsigned int GPIO_LOAD_PIN[4] = {PAYLOAD_1_Pin, PAYLOAD_2_Pin, PAYLOAD_3_Pin, PAYLOAD_4_Pin};
 
-char AT_RESET[] = "AT+CRESET\r\n";
-char AT_CHECK_A76XX[] = "AT\r\n";
-char AT_CHECK_ESIM[] = "AT+CGREG?\r\n";
-char AT_START_MQTT[] = "AT+CMQTTSTART\r\n";
-char AT_ACQUIRE_CLIENT[] = "AT+CMQTTACCQ=0,\"%s\",0\r\n";
-char AT_CONNECT_MQTT[] = "AT+CMQTTCONNECT=0,\"%s:%d\",60,1,\"%s\",\"%s\"\r\n";
-char AT_SET_PUBLISH_TOPIC[] = "AT+CMQTTTOPIC=0,%d\r\n";
-char AT_SET_PUBLISH_PAYLOAD[] = "AT+CMQTTPAYLOAD=0,%d\r\n";
-char AT_PUBLISH[] = "AT+CMQTTPUB=0,1,60\r\n";
-char AT_SET_SUBCRIBE_0_9_TOPIC[] = "AT+CMQTTSUBTOPIC=0,%d,1\r\n";
-char AT_SET_SUBCRIBE_10_18_TOPIC[] = "AT+CMQTTSUBTOPIC=0,%d,1\r\n";
-char AT_SUBCRIBE_TOPIC[] = "%s%d\r\n";
-char AT_SUBCRIBE[] = "AT+CMQTTSUB=0\r\n";
 char AT_COMMAND[100];
-char AT_INFORM_PAYLOAD[] = "{%d:%d}\r\n";
 float SignalStrength = 0;
 int update_10_minute;
 int onReay = 0;
 int rssi = -99;
 
 int timeOutConnectMQTT = 15000;
-int isATOK = 0;
 int isPBDONE = 0;
 int payLoadPin, payLoadStatus;
 
-int rxDataCouter = 0;
-char simcomRxBuffer[100];
-int payloadIndex;
-uint8_t rxData;
-uint16_t rxIndex;
-int loadflag = 0;
 char rxBuffer[150];
 char rx_data_sim[150];
 int previousTick;
 int isConnectSimcomA76xx = 0;
 int isConnectMQTT = 0;
-int sendPayloadStatusToServer;
-
-int lengthOfStatusPayloadArray;
-int statusOfLoad;
-int testlength;
-int ledStatusSendTopic = 0;
 float Data_Percentage_pin;
+int  update_status_to_server;
 
 bool fn_Enable_MQTT = false;
 bool fn_Connect_MQTT = false;
@@ -127,10 +93,9 @@ bool fn_Publish_MQTT = false;
 bool fn_Acquier_MQTT = false;
 bool fn_update_status = false;
 
-
 uint32_t address = 0x0801FC00;
 uint32_t data = 0x01;
-uint32_t read_data=3;
+uint32_t read_data = 3;
 uint32_t value_page[4];
 // char rxBuffer[50];
 /* USER CODE END PV */
@@ -159,46 +124,12 @@ void informPayloadToServer(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == htim6.Instance) {
     if (isConnectMQTT) {
-      sendPayloadStatusToServer = 1;
+      update_status_to_server = 1;
     }
-	 IWDG->KR = 0xAAAA;
-//	 update_10_minute++;
-
+    IWDG->KR = 0xAAAA;
+    //	 update_10_minute++;
   }
   HAL_TIM_Base_Start_IT(&htim6);
-}
-void Flash_Write(uint32_t address, uint32_t data)
-{
-    // Mở khóa bộ nhớ Flash
-    HAL_FLASH_Unlock();
-
-    // Cấu hình xóa trang Flash
-    FLASH_EraseInitTypeDef EraseInitStruct;
-    uint32_t PageError = 0;
-
-    EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
-    EraseInitStruct.PageAddress = address;
-    EraseInitStruct.NbPages = 1;
-
-    // Xóa trang Flash
-    if (HAL_FLASHEx_Erase(&EraseInitStruct, &PageError) != HAL_OK)
-    {
-        // Xử lý lỗi nếu có
-    }
-
-    // Ghi dữ liệu vào Flash
-    if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data) != HAL_OK)
-    {
-        // Xử lý lỗi nếu có
-    }
-
-    // Khóa lại bộ nhớ Flash
-    HAL_FLASH_Lock();
-}
-uint32_t Flash_Read(uint32_t address)
-{
-    // Đọc dữ liệu từ địa chỉ Flash
-    return *(__IO uint32_t*)address;
 }
 /* USER CODE END 0 */
 
@@ -260,10 +191,10 @@ int main(void) {
     if (!isConnectMQTT) {
       isConnectMQTT = init_cricket();
     }
-    if (sendPayloadStatusToServer == 1) {
+    if (update_status_to_server == 1) {
       if (onReay > 0) {
         fn_update_status = update_status();
-        sendPayloadStatusToServer = 0;
+        update_status_to_server = 0;
       }
     }
   }

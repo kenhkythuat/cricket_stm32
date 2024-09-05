@@ -178,22 +178,22 @@ void SysTick_Handler(void) {
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-//  countSystick++;
-//  count_IWDG++;
-//  if (countSystick > TIME_SYSTICK) {
-//    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, SET);
-//  }
-//  if (countSystick > TIME_SYSTICK * 2) {
-//    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, RESET);
-//    countSystick = 0;
-//  }
-//  if (count_IWDG > UPDATE_IWDG) {
-//    IWDG->KR = 0xAAAA;
-//  }
-//  if (countSystick > TIME_SYSTICK * 2) {
-//    IWDG->KR = 0xAAAA;
-//    count_IWDG = 0;
-//  }
+  //  countSystick++;
+  //  count_IWDG++;
+  //  if (countSystick > TIME_SYSTICK) {
+  //    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, SET);
+  //  }
+  //  if (countSystick > TIME_SYSTICK * 2) {
+  //    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, RESET);
+  //    countSystick = 0;
+  //  }
+  //  if (count_IWDG > UPDATE_IWDG) {
+  //    IWDG->KR = 0xAAAA;
+  //  }
+  //  if (countSystick > TIME_SYSTICK * 2) {
+  //    IWDG->KR = 0xAAAA;
+  //    count_IWDG = 0;
+  //  }
 
   /* USER CODE END SysTick_IRQn 1 */
 }

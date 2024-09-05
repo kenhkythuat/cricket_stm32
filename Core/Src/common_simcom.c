@@ -62,7 +62,7 @@ float fn_check_signal_simcom(void) {
   HAL_Delay(200);
   sendingToSimcomA76xx("AT+CREG?\r\n");
   HAL_Delay(200);
-  if (strstr((char *)rx_data_sim, "+CREG: 0,1") || strstr((char *)rx_data_sim, "+CREG: ,6")||strstr((char *)rx_data_sim, "+CREG: 2,6")) {
+  if (strstr((char *)rx_data_sim, "+CREG: 0,1") || strstr((char *)rx_data_sim, "+CREG: ,6") || strstr((char *)rx_data_sim, "+CREG: 2,6")) {
     printf("-----------------Network registration OK!------------------\n");
   } else
     return 0;
@@ -277,7 +277,7 @@ int stop_mqtt_via_gsm(void) {
   sendingToSimcomA76xx("AT+CMQTTDISC?\r\n");
   HAL_Delay(500);
   if (strstr((char *)rx_data_sim, "+CMQTTDISC: 0,0") != NULL) {
-    printf("----------------- Connecttion! ------------------\n");
+    printf("----------------- Connection! ------------------\n");
     AT_Check_Dis_MQTT = true;
   } else {
     printf("----------------- Disconnect! ------------------\n");
@@ -317,13 +317,11 @@ int stop_mqtt_via_gsm(void) {
   return 0;
 }
 int update_status(void) {
-	read_statusload();
-	printf("write 0xfffff ok\n");
   fn_Publish_MQTT = publish_mqtt_via_gsm();
   if (!fn_Publish_MQTT) {
     int temp = 0;
     for (int i = 1; i <= 15; i++) {
-    	temp = check_error_mqtt_via_gsm();
+      temp = check_error_mqtt_via_gsm();
       if (!temp) {
         count_errors++;
         printf("-----------------UPDATE FAIL %d!------------------\n", count_errors);
@@ -342,10 +340,11 @@ void restart_stm32(void) {
   printf("\r\n-----------------Restart STM32------------------\r\n");
   printf("\r\n-----------------GOOD BYE !------------------\r\n");
   stop_mqtt_via_gsm();
+  read_statusload();
   NVIC_SystemReset();
 }
 int init_cricket(void) {
-printf("\r\n-----------------INIT CRICKET !------------------\r\n");
+  printf("\r\n-----------------INIT CRICKET !------------------\r\n");
   if (isPBDONE == true) {
     if (!fn_CheckSim) {
       fn_CheckSim = fn_check_signal_simcom();
@@ -364,7 +363,7 @@ printf("\r\n-----------------INIT CRICKET !------------------\r\n");
     if (fn_Connect_MQTT) {
       fn_Subcribe_MQTT = subscribe_mqtt_via_gsm();
       if (fn_Subcribe_MQTT) {
-    	  HAL_GPIO_WritePin(GPIOB,LED_STATUS_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOB, LED_STATUS_Pin, GPIO_PIN_SET);
         isConnectMQTT = true;
         inital_check = true;
         return 1;
@@ -373,7 +372,7 @@ printf("\r\n-----------------INIT CRICKET !------------------\r\n");
         // isConnectedMQTT = false;
       }
     }
-    printf("-----------------Complete inital check ------------------");
+    printf("-----------------Complete initial check ------------------");
   }
   return 0;
 }
@@ -395,25 +394,20 @@ int event_wait_function(void) {
 
   return 0;
 }
-int check_active_payload(void)
-{
-	for(int i=1; i<=4;i++)
-	{
-		static int temp=0;
-		temp=HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i - 1], GPIO_LOAD_PIN[i - 1]);
-		if(temp==1)
-		{
-			onReay++;
-		}
-		else onReay--;
-	}
-	if(onReay>=NUMBER_LOADS)
-	{
-		onReay=NUMBER_LOADS;
-	}
-	if(onReay<0)
-	{
-		onReay=0;
-	}
-	return onReay;
+int check_active_payload(void) {
+  for (int i = 1; i <= 4; i++) {
+    static int temp = 0;
+    temp = HAL_GPIO_ReadPin(GPIO_LOAD_PORT[i - 1], GPIO_LOAD_PIN[i - 1]);
+    if (temp == 1) {
+      onReay++;
+    } else
+      onReay--;
+  }
+  if (onReay >= NUMBER_LOADS) {
+    onReay = NUMBER_LOADS;
+  }
+  if (onReay < 0) {
+    onReay = 0;
+  }
+  return onReay;
 }

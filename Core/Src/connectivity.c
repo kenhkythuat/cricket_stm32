@@ -26,13 +26,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     printf("\r\nSIMCOM Response:");
     printf(rxBuffer);
     static int times;
-    times=strlen(rxBuffer);
+    times = strlen(rxBuffer);
     for (int i = 0; i < times; i++) {
-      // printf("data[%d]: %c\r\n", i, rxBuffer[i]);
       rx_data_sim[i] = rxBuffer[i];
       if ((char)rxBuffer[i] == (char)SERIAL_NUMBER[5] && (char)rxBuffer[i + 1] == (char)SERIAL_NUMBER[6] && (char)rxBuffer[i + 2] == (char)SERIAL_NUMBER[7]) {
-        //static int num_load = 0;
-        // static int status;
         payLoadPin = (rxBuffer[i + 4] - 48);
 #if SIMCOM_MODEL == a7672
         if (rxBuffer[(i + 29)] == 49 && isPBDONE == true)
@@ -40,7 +37,6 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
         if (rxBuffer[(i + 31)] == 49 && isPBDONE == true)
 #endif
         {
-          //payLoadPin = (rxBuffer[i + 4] - 48);
           printf("-----------ON RELAY %d -----------\r\n", payLoadPin);
           HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin - 1], GPIO_LOAD_PIN[payLoadPin - 1], 1);
           onReay++;
@@ -55,8 +51,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
         if (rxBuffer[(i + 31)] == 48 && isPBDONE == true)
 #endif
         {
-          //payLoadPin = (rxBuffer[i + 4] - 48);
-        printf("-----------OFF RELAY %d -----------\r\n", payLoadPin);
+          printf("-----------OFF RELAY %d -----------\r\n", payLoadPin);
           HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin - 1], GPIO_LOAD_PIN[payLoadPin - 1], 0);
           --onReay;
           if (onReay <= 0) {
@@ -68,9 +63,8 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
     }
     if ((strstr((char *)rxBuffer, "+CMQTTCONNLOST") != NULL) && isPBDONE == true) {
       printf("-----------------Client Disconnect passively!------------------\n");
-     check_error_mqtt_via_gsm();
+      check_error_mqtt_via_gsm();
     }
-    //onReay=check_active_payload();
     memset(rxBuffer, '\0', 150);
   }
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t *)rxBuffer, 150);
