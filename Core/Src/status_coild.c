@@ -30,17 +30,17 @@ void Flash_Erase(uint32_t numberpages) {
   HAL_FLASH_Lock();
 }
 
-void read_flash_payload(void)
-{
-	for(int i=0;i<=3;i++)
-	{
-		static int temp;
-		temp=Read_Page(Address+(i*16));
-		HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin+i], GPIO_LOAD_PIN[payLoadPin+i],temp);
-	}
-	onReay = *(uint32_t *)(Address + 64);
+void read_flash_payload(void) {
+  for (int i = 0; i <= 3; i++) {
+    static int temp;
+    temp = Read_Page(Address + (i * 16));
+    HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin + i], GPIO_LOAD_PIN[payLoadPin + i], temp);
+  }
+  onReay = *(uint32_t *)(Address + 64);
+  if (onReay > 0) {
+    HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 0);
+  }
 }
-
 
 uint32_t Read_Page(uint32_t Address_ex) {
   value_page0 = *(uint32_t *)(Address_ex);

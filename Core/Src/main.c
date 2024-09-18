@@ -83,7 +83,7 @@ int previousTick;
 int isConnectSimcomA76xx = 0;
 int isConnectMQTT = 0;
 float Data_Percentage_pin;
-int  update_status_to_server;
+int update_status_to_server;
 
 bool fn_Enable_MQTT = false;
 bool fn_Connect_MQTT = false;
@@ -143,8 +143,7 @@ int main(void) {
 
   /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick.
-   */
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
   /* USER CODE BEGIN Init */
@@ -187,15 +186,15 @@ int main(void) {
       isConnectMQTT = init_cricket();
     }
     if (update_status_to_server == 1) {
-        fn_update_status = update_status();
-        update_status_to_server = 0;
+      fn_update_status = update_status();
+      update_status_to_server = 0;
     }
-    if(update_10_minute>=2)
-    {
-    	read_statusload();
-    	update_10_minute=0;
+    if (update_10_minute >= 3) {
+      Data_Percentage_pin = Level_Pin();
+      rssi = read_signal_quality();
+      //    	read_statusload();
+      update_10_minute = 0;
     }
-
   }
   /* USER CODE END 3 */
 }
@@ -324,9 +323,9 @@ static void MX_TIM6_Init(void) {
 
   /* USER CODE END TIM6_Init 1 */
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 39999;
+  htim6.Init.Prescaler = 19999;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 2999;
+  htim6.Init.Period = 1999;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK) {
     Error_Handler();

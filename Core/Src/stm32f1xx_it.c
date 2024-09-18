@@ -178,15 +178,15 @@ void SysTick_Handler(void) {
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  //  countSystick++;
+  countSystick++;
   //  count_IWDG++;
-  //  if (countSystick > TIME_SYSTICK) {
-  //    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, SET);
-  //  }
-  //  if (countSystick > TIME_SYSTICK * 2) {
-  //    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, RESET);
-  //    countSystick = 0;
-  //  }
+  if ((countSystick > TIME_SYSTICK) && isConnectMQTT) {
+    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, SET);
+  }
+  if ((countSystick > TIME_SYSTICK * 2) && isConnectMQTT) {
+    HAL_GPIO_WritePin(LED_STATUS_GPIO_Port, LED_STATUS_Pin, RESET);
+    countSystick = 0;
+  }
   //  if (count_IWDG > UPDATE_IWDG) {
   //    IWDG->KR = 0xAAAA;
   //  }

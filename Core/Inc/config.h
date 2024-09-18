@@ -13,22 +13,21 @@
 #include <string.h>
 
 // Codename of the farm, where we deploy this node to.
-//  #define FARM "gateway-agriconnect"
 
-//#define FARM "gateway-agriconnect"
-#define FARM "demox"
+#define FARM "gateway-agriconnect"
+//#define FARM "demox"
 
-#define SIMCOM_MODEL a7670   // #defualt is a7670 if you use model other please choose enter your model
+#define SIMCOM_MODEL a7672 // #default is a7670 if you use model other please choose enter your model
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000197"
+  #define SERIAL_NUMBER "sw000172"
 #endif
 
-#define MQTT_USER "node" 		// User - connect to MQTT broker
-#define MQTT_PASS "654321"		// Password - connect to MQTT broker
+//#define MQTT_USER "node" 		// User - connect to MQTT broker
+//#define MQTT_PASS "654321"		// Password - connect to MQTT broker
 
-//#define MQTT_USER "mqttnode"       // User - connect to MQTT broker
-//#define MQTT_PASS "congamo"		// Password - connect to MQTT broker
+#define MQTT_USER "mqttnode"       // User - connect to MQTT broker
+#define MQTT_PASS "congamo"		// Password - connect to MQTT broker
 
 #define MQTT_TOPIC_ACTUATOR_STATUS FARM "/sn/" SERIAL_NUMBER "/as/"
 // MQTT topic to subscribe and get command to switch on/off actuator

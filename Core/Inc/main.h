@@ -28,10 +28,10 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-#include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdbool.h"
 float Level_Pin (void);
 void read_statusload();
 void Flash_Erase(uint32_t numberpages);
@@ -113,7 +113,7 @@ extern int isConnectMQTT;
 extern int previousTick;
 extern int timeOutConnectMQTT;
 extern int payLoadPin,payLoadStatus;
-extern char array_json[100];
+extern char array_json[150];
 extern float Data_Percentage_pin;
 extern float SignalStrength;
 extern int rssi;

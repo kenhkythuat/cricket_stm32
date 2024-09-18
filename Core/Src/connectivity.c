@@ -13,7 +13,7 @@
 #include "string.h"
 #include <math.h>
 extern UART_HandleTypeDef huart1;
-char array_json[100];
+char array_json[150];
 // float Percentage_battery;
 
 void sendingToSimcomA76xx(char *cmd) {
@@ -53,7 +53,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
         {
           printf("-----------OFF RELAY %d -----------\r\n", payLoadPin);
           HAL_GPIO_WritePin(GPIO_LOAD_PORT[payLoadPin - 1], GPIO_LOAD_PIN[payLoadPin - 1], 0);
-          --onReay;
+          onReay--;
           if (onReay <= 0) {
             onReay = 0;
             HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 1);
@@ -78,8 +78,6 @@ void create_JSON(void) {
     sprintf(payload1, "%d", i);
     cJSON_AddNumberToObject(json, payload1, statusOfLoad);
   }
-  Data_Percentage_pin = Level_Pin();
-  rssi = read_signal_quality();
   cJSON_AddNumberToObject(json, "_gsm_signal_strength", rssi);
   cJSON_AddNumberToObject(json, "_battery_level", Data_Percentage_pin);
   char *json_string = cJSON_Print(json);
