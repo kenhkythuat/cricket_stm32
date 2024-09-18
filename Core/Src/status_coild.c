@@ -40,6 +40,10 @@ void read_flash_payload(void) {
   if (onReay > 0) {
     HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 0);
   }
+  if (onReay <=0) {
+	onReay=0;
+    HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 1);
+  }
 }
 
 uint32_t Read_Page(uint32_t Address_ex) {
