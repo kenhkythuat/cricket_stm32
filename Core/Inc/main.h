@@ -51,8 +51,7 @@ extern uint32_t value_Relay;
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define a7672 1
-#define a7670 2
+
 
 /* USER CODE END EC */
 
@@ -77,6 +76,7 @@ extern int init_cricket(void);
 extern int event_wait_function(void);
 extern int check_active_payload(void);
 extern void read_flash_payload(void);
+extern void init_flash(void);
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

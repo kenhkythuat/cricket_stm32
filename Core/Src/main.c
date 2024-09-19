@@ -167,6 +167,7 @@ int main(void) {
 
   printf("-----Welcome to Agriconnect-----\n");
   printf("-----Hello Cricket-----\n");
+  init_flash();
   read_flash_payload();
   HAL_UARTEx_ReceiveToIdle_IT(&huart1, (uint8_t *)rxBuffer, 150);
   HAL_TIM_Base_Start_IT(&htim6);
@@ -192,7 +193,7 @@ int main(void) {
     if (update_10_minute >= 3) {
       Data_Percentage_pin = Level_Pin();
       rssi = read_signal_quality();
-      //    	read_statusload();
+      // read_statusload();
       update_10_minute = 0;
     }
   }

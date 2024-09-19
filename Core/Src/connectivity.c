@@ -31,10 +31,12 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
       rx_data_sim[i] = rxBuffer[i];
       if ((char)rxBuffer[i] == (char)SERIAL_NUMBER[5] && (char)rxBuffer[i + 1] == (char)SERIAL_NUMBER[6] && (char)rxBuffer[i + 2] == (char)SERIAL_NUMBER[7]) {
         payLoadPin = (rxBuffer[i + 4] - 48);
-#if SIMCOM_MODEL == a7672
+#if SIMCOM_MODEL == a7672s
         if (rxBuffer[(i + 29)] == 49 && isPBDONE == true)
-#elif SIMCOM_MODEL == a7670
+#elif SIMCOM_MODEL == a7670c
         if (rxBuffer[(i + 31)] == 49 && isPBDONE == true)
+#elif SIMCOM_MODEL == a7670sa
+        if (rxBuffer[(i + 29)] == 49 && isPBDONE == true)
 #endif
         {
           printf("-----------ON RELAY %d -----------\r\n", payLoadPin);
@@ -45,10 +47,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
           }
           HAL_GPIO_WritePin(ON_OFF_PWM_GPIO_Port, ON_OFF_PWM_Pin, 0);
         }
-#if SIMCOM_MODEL == a7672
+
+#if SIMCOM_MODEL == a7672s
         if (rxBuffer[(i + 29)] == 48 && isPBDONE == true)
-#elif SIMCOM_MODEL == a7670
+#elif SIMCOM_MODEL == a7670c
         if (rxBuffer[(i + 31)] == 48 && isPBDONE == true)
+//            if (rxBuffer[(i + 8)] == 48 && isPBDONE == true)
+#elif SIMCOM_MODEL == a7670sa
+        if (rxBuffer[(i + 29)] == 48 && isPBDONE == true)
 #endif
         {
           printf("-----------OFF RELAY %d -----------\r\n", payLoadPin);

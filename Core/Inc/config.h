@@ -14,13 +14,16 @@
 
 // Codename of the farm, where we deploy this node to.
 
-#define FARM "gateway-agriconnect"
+#define FARM "queenfarm-edn"
 //#define FARM "demox"
+#define a7672s 1
+#define a7670c 2
+#define a7670sa 3
 
-#define SIMCOM_MODEL a7672 // #default is a7670 if you use model other please choose enter your model
+#define SIMCOM_MODEL a7670c // #default is a7670c if you use model other please choose enter your model
 // Serial number. Must be lower case.
 #ifndef SERIAL_NUMBER
-  #define SERIAL_NUMBER "sw000172"
+  #define SERIAL_NUMBER "sw000209"
 #endif
 
 //#define MQTT_USER "node" 		// User - connect to MQTT broker
@@ -33,7 +36,7 @@
 // MQTT topic to subscribe and get command to switch on/off actuator
 #define MQTT_TOPIC_ACTUATOR_CONTROL FARM "/snac/" SERIAL_NUMBER "/"
 /** MQTT
- * Global broker: mqtt.agriconnect.vn
+ * Global broker: mqtt.agriconnect.vn`
  */
 #define MQTT_HOST "tcp://mqtt.agriconnect.vn"           		// MQTT broker
 

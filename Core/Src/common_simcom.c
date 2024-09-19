@@ -320,7 +320,7 @@ int stop_mqtt_via_gsm(void) {
   return 0;
 }
 int update_status(void) {
-  for (int i = 1; i <= 3; i++) {
+  for (int i = 1; i <= 10; i++) {
     fn_Publish_MQTT = publish_mqtt_via_gsm();
     if (fn_Publish_MQTT) {
       return 1;
